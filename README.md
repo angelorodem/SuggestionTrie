@@ -1,6 +1,6 @@
 # SuggestionTrie  
 
-A simple crate that allows you to create a radix trie for suggestion search, it allows to index and search for data indexed by a set of keywords in microseconds.
+A Radix trie for suggestion search, it allows to search for data indexed by a set of keywords fast.
 
 * Compressed trie by default, more memory efficient for sparse tries
 * It supports a simple fuzzy to fix typos in the search.

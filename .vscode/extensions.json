@@ -1,0 +1,23 @@
+{
+    "recommendations": [
+        "serayuzgur.crates",
+        "davidanson.vscode-markdownlint",
+        "rust-lang.rust-analyzer",
+        "bungcip.better-toml",
+        "jakob101.relativepath",
+        "vadimcn.vscode-lldb",
+        "usernamehw.errorlens",
+        "wayou.vscode-todo-highlight",
+        "vscode-icons-team.vscode-icons",
+        "jscearcy.rust-doc-viewer",
+        "dzhavat.bracket-pair-toggler",
+        "github.vscode-pull-request-github",
+        "christian-kohler.path-intellisense",
+        "quicktype.quicktype",
+        "visualstudioexptteam.vscodeintellicode",
+        "george-alisson.html-preview-vscode",
+        "github.copilot-chat",
+        "donjayamanne.githistory",
+        "streetsidesoftware.code-spell-checker"
+    ]
+}

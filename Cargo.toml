@@ -2,6 +2,15 @@
 name = "suggestion_trie"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/angelorodem/SuggestionTree"
+homepage = "https://github.com/angelorodem/SuggestionTree"
+description = """
+A Radix trie for suggestion search, it allows to search for data indexed by a set of keywords fast.
+"""
+categories = ["data-structures","development-tools", "algorithms"]
+keywords = ["trie", "radix", "suggestion", "search", "autocomplete", "data-structure"]
 
 [[bench]]
 name = "benches"
@@ -9,6 +18,4 @@ name = "benches"
 [dependencies]
 rand = "^0.8"
 lazy_static = "*"
-getrandom = { version = "0.2.3", features = ["js"] }
-chrono = "^0.4"
 ahash = "^0.8.3"
