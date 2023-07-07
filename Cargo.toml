@@ -19,5 +19,5 @@ name = "benches"
 
 [dependencies]
 rand = "^0.8"
-lazy_static = "*"
+lazy_static = "^1.4.0"
 ahash = "^0.8.3"
