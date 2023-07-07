@@ -1,6 +1,6 @@
 # SuggestionTrie  
 
-A Radix trie for suggestion search, it allows to search for data indexed by a set of keywords fast.
+A Radix trie for suggestion search, it allows searching for data indexed by a set of keywords fast.
 
 * Compressed trie by default, more memory efficient for sparse tries
 * It supports a simple fuzzy to fix typos in the search.
@@ -9,10 +9,10 @@ A Radix trie for suggestion search, it allows to search for data indexed by a se
 
 ## Examples  
 
-Search for a word (in this example a password) in a list with +256M entries in µs.  
+Search for a word (in this example, an password) in a list with +256M entries in µs.  
 <img src="https://github.com/angelorodem/SuggestionTree/blob/master/doc_imgs/alot.gif?raw=true">
 
-Find data associated with a word like file paths.  
+You can add custom data to the indexed suggestions, like file paths, dates, hashes, etc.  
 <img src="https://github.com/angelorodem/SuggestionTree/blob/master/doc_imgs/files.gif?raw=true">
 
 ## Usage
