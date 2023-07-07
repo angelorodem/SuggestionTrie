@@ -11,7 +11,7 @@ description = """
 A Radix trie for suggestion search, it allows to search for data indexed by a set of keywords fast.
 """
 categories = ["data-structures", "algorithms"]
-keywords = ["trie", "suggestion", "search", "autocomplete", "data-structure"]
+keywords = ["trie", "suggestion", "search",  "data-structure"]
 exclude = ["doc_imgs/", ".*"]
 
 [[bench]]
