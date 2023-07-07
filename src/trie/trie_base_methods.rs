@@ -56,7 +56,6 @@ impl<T: std::clone::Clone> TrieRoot<T> {
     /// let results = trie_root.get_suggestions("Rodent");
     /// assert_eq!(results.unwrap()[0].title, "Rat");
     /// ```
-    /// Todo: custom CONSTRAINED_FUZZY_RATIO
     pub fn new(min_results_before_fuzzy: usize, max_node_results: Option<usize>) -> TrieRoot<T> {
         if let Some(max_node_results) = max_node_results {
             TrieRoot {
