@@ -1,4 +1,5 @@
 [package]
+authors = ["Angelo L. B. Rodem"]
 name = "suggestion_trie"
 version = "0.1.0"
 edition = "2021"
@@ -9,8 +10,9 @@ homepage = "https://github.com/angelorodem/SuggestionTree"
 description = """
 A Radix trie for suggestion search, it allows to search for data indexed by a set of keywords fast.
 """
-categories = ["data-structures","development-tools", "algorithms"]
-keywords = ["trie", "radix", "suggestion", "search", "autocomplete", "data-structure"]
+categories = ["data-structures", "algorithms"]
+keywords = ["trie", "suggestion", "search", "autocomplete", "data-structure"]
+exclude = ["doc_imgs/", ".*"]
 
 [[bench]]
 name = "benches"
