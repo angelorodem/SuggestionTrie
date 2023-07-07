@@ -10,10 +10,10 @@ A Radix trie for suggestion search, it allows searching for data indexed by a se
 ## Examples  
 
 Search for a word (in this example, an password) in a list with +256M entries in µs.  
-<img src="https://github.com/angelorodem/SuggestionTree/blob/master/doc_imgs/alot.gif?raw=true">
+<img src="https://github.com/angelorodem/SuggestionTrie/blob/master/doc_imgs/alot.gif?raw=true">
 
 You can add custom data to the indexed suggestions, like file paths, dates, hashes, etc.  
-<img src="https://github.com/angelorodem/SuggestionTree/blob/master/doc_imgs/files.gif?raw=true">
+<img src="https://github.com/angelorodem/SuggestionTrie/blob/master/doc_imgs/files.gif?raw=true">
 
 ## Usage
 
