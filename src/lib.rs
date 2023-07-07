@@ -1,6 +1,6 @@
 //!# SuggestionTrie  
 //!
-//!A Radix trie for suggestion search, it allows to search for data indexed by a set of keywords fast.
+//!A Radix trie for suggestion search, it allows searching for data indexed by a set of keywords fast.
 //!
 //!* Compressed trie by default, more memory efficient for sparse tries
 //!* It supports a simple fuzzy to fix typos in the search.
@@ -9,18 +9,20 @@
 //!
 //!## Examples  
 //!
-//!Search for a word (in this example a password) in a list with +256M entries in µs.  
-//!<img src="https://github.com/angelorodem/SuggestionTree/blob/master/doc_imgs/alot.gif?raw=true">
+//!A common usage for suggestion tries is to find data like words, documents, executables and any other data that is associated with a set of words;
 //!
-//!Find data associated with a word like file paths.  
-//!<img src="https://github.com/angelorodem/SuggestionTree/blob/master/doc_imgs/files.gif?raw=true">
+//!Search for a word (in this example, an password) in a list with +256M entries in µs.  
+//!<img src="https://github.com/angelorodem/SuggestionTrie/blob/master/doc_imgs/alot.gif?raw=true">
+//!
+//!You can add custom data to the indexed suggestions, like file paths, dates, hashes, etc.  
+//!<img src="https://github.com/angelorodem/SuggestionTrie/blob/master/doc_imgs/files.gif?raw=true">
 //!
 //!## Usage
 //!
 //!Cargo.toml
 //!
 //!```toml
-//!suggestion_trie = "0.1.0"
+//!suggestion_trie = "^0.1.0"
 //!```
 //!
 //!Code example
@@ -51,7 +53,7 @@
 //!
 //!## Docs  
 //!
-//!check the docs [here](https://docs.rs/suggestion_trie/0.1.0/suggestion_trie/)
+//!check the docs [here](https://docs.rs/suggestion_trie/latest/suggestion_trie/)
 #![crate_name = "suggestion_trie"]
 #![feature(round_char_boundary)]
 #[macro_use]

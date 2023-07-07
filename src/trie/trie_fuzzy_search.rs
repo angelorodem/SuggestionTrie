@@ -4,7 +4,6 @@ use crate::trie::trie_structs::{SearchResults, TrieNode, TrieRoot};
 use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
 
-use super::fuzzy_swaps::FuzzyCharSwap;
 use ahash::RandomState;
 
 const FUZZY_PENALTY_REMOVE: i32 = 200;
@@ -13,7 +12,7 @@ const FUZZY_PENALTY_SWAP_BASE: i32 = 30;
 
 pub(crate) struct FuzzyFunctionData<'a> {
     pub(crate) original_len: usize,
-    pub(crate) swap_table: Vec<(char, Option<&'a Vec<FuzzyCharSwap>>)>,
+    pub(crate) swap_table: Vec<(char, Option<&'a Vec<char>>)>,
     pub(crate) visited_nodes: HashMap<u32, SearchResults, RandomState>,
     pub(crate) memoize_function: HashSet<(String, u32, i32, i32), RandomState>,
 }
@@ -28,13 +27,13 @@ impl<T: std::clone::Clone> TrieRoot<T> {
     /// We could return the swap score, but its not that important
     fn fuzzy_swap(
         char_find: &Option<char>,
-        swap_array: &Option<&(char, Option<&Vec<FuzzyCharSwap>>)>,
+        swap_array: &Option<&(char, Option<&Vec<char>>)>,
     ) -> bool {
         if let Some(swap) = swap_array {
             if let Some(combs) = swap.1 {
                 if combs.iter().any(|x| {
                     if let Some(c) = &char_find {
-                        x.char == *c
+                        *x == *c
                     } else {
                         false
                     }
@@ -311,7 +310,7 @@ impl<T: std::clone::Clone> TrieRoot<T> {
         }
     }
 
-    pub(crate) fn setup_swap_table(&self, query: &str) -> Vec<(char, Option<&Vec<FuzzyCharSwap>>)> {
+    pub(crate) fn setup_swap_table(&self, query: &str) -> Vec<(char, Option<&Vec<char>>)> {
         let mut ret = Vec::with_capacity(query.len());
 
         for c in query.chars() {

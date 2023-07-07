@@ -1,7 +1,2 @@
 pub mod suggestion_structs;
-
-
-pub use suggestion_structs::{
-    Suggestion
-};
-
+pub use suggestion_structs::Suggestion;

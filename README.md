@@ -9,6 +9,8 @@ A Radix trie for suggestion search, it allows searching for data indexed by a se
 
 ## Examples  
 
+A common usage for suggestion tries is to find data like words, documents, executables and any other data that is associated with a set of words;
+
 Search for a word (in this example, an password) in a list with +256M entries in µs.  
 <img src="https://github.com/angelorodem/SuggestionTrie/blob/master/doc_imgs/alot.gif?raw=true">
 
@@ -20,7 +22,7 @@ You can add custom data to the indexed suggestions, like file paths, dates, hash
 Cargo.toml
 
 ```toml
-suggestion_trie = "0.1.0"
+suggestion_trie = "^0.1.0"
 ```
 
 Code example
