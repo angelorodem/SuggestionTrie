@@ -1,0 +1,14 @@
+[package]
+name = "suggestion_trie"
+version = "0.1.0"
+edition = "2021"
+
+[[bench]]
+name = "benches"
+
+[dependencies]
+rand = "^0.8"
+lazy_static = "*"
+getrandom = { version = "0.2.3", features = ["js"] }
+chrono = "^0.4"
+ahash = "^0.8.3"

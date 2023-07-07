@@ -1,0 +1,9 @@
+{
+    "rust-analyzer.showUnlinkedFileNotification": false,
+    "rust-analyzer.checkOnSave.command": "clippy",
+    "lldb.showDisassembly": "auto",
+    "lldb.dereferencePointers": true,
+    "lldb.consoleMode": "commands",
+    "lldb.displayFormat": "auto",
+    "terminal.explorerKind": "external",
+}
