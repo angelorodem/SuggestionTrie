@@ -51,4 +51,4 @@ assert_eq!(results.unwrap()[0].title, "Rat");
 
 ## Docs  
 
-check the docs [here](https://docs.rs/suggestion_trie/0.1.0/suggestion_trie/)
+check the docs [here](https://docs.rs/suggestion_trie/latest/suggestion_trie/)
