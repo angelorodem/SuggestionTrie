@@ -1,3 +1,4 @@
+#![feature(round_char_boundary)]
 #![feature(test)]
 extern crate test;
 
@@ -395,18 +396,6 @@ mod tests {
     fn bench_fuzzy_find_case_u(root: &TrieRoot<HashMap<String,String>>) {
         root.non_fuzzy_search("Saint Peter Drink coffee at the corner of the striet");
     }
-
-    // fn load_real_entries() -> Vec<TrieInputData>{
-
-    //     let bkm =
-    //         fs::read_to_string("./test_data/bkm90.json").expect("Should have been able to read the file");
-
-    //     let entries_bkm: Vec<TrieInputData> = serde_json::from_str(&bkm).unwrap();
-
-    //     let mut entries = entries_bkm;
-
-    //     entries
-    // }
 
     #[bench]
     fn bench_insert(b: &mut Bencher) {

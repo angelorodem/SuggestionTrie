@@ -107,6 +107,8 @@ impl<T: std::clone::Clone> TrieRoot<T> {
         }
     }
 
+    /// This function is a memoization wrapper for the real search_query_fuzzy_original function
+    /// We don't want to repeat the same node if we reach it with the same parameters
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn search_query_fuzzy(
         &self,
@@ -118,23 +120,21 @@ impl<T: std::clone::Clone> TrieRoot<T> {
         score_modifier: i32,
         node_skip: usize,
     ) -> bool {
-        {
-            let set = &mut fuzzy_data.memoize_function;
-            if set.contains(&(
-                query.to_string(),
-                node_borrow.uid,
-                fuzzy_count,
-                score_modifier,
-            )) {
-                return false;
-            }
-            set.insert((
-                query.to_string(),
-                node_borrow.uid,
-                fuzzy_count,
-                score_modifier,
-            ));
+        let set = &mut fuzzy_data.memoize_function;
+        if set.contains(&(
+            query.to_string(),
+            node_borrow.uid,
+            fuzzy_count,
+            score_modifier,
+        )) {
+            return false;
         }
+        set.insert((
+            query.to_string(),
+            node_borrow.uid,
+            fuzzy_count,
+            score_modifier,
+        ));        
 
         self.search_query_fuzzy_original(
             query,
@@ -147,12 +147,13 @@ impl<T: std::clone::Clone> TrieRoot<T> {
         )
     }
 
+    // Simple function to remove a char from a string (faster than replace_range)
     pub(crate) fn modify_query_remove(&self, query: &str, position: usize) -> String {
         let upper_cut = query.ceil_char_boundary(position + 1);
         [&query[..position], &query[upper_cut..]].concat()
     }
 
-    pub(crate) fn modify_query_fuzzy(
+    pub(crate) fn modify_query_swap(
         &self,
         node_char: &Option<char>,
         query_char: &Option<char>,
@@ -268,7 +269,7 @@ impl<T: std::clone::Clone> TrieRoot<T> {
                     );
 
                     // Fuzzy SWAP
-                    if let Some(next_query) = self.modify_query_fuzzy(
+                    if let Some(next_query) = self.modify_query_swap(
                         &node_char,
                         &query_char,
                         fuzzy_data,
