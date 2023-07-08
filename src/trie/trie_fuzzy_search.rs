@@ -1,5 +1,5 @@
 use crate::suggestion::Suggestion;
-use crate::trie::fuzzy_swaps::{get_query_ratio, FUZZY_CHAR_SWAPS_DATA, ConstrainedFuzzyRatio};
+use crate::trie::fuzzy_swaps::{get_query_ratio, FUZZY_CHAR_SWAPS_DATA};
 use crate::trie::trie_structs::{SearchResults, TrieNode, TrieRoot};
 use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
@@ -107,6 +107,7 @@ impl<T: std::clone::Clone> TrieRoot<T> {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub(crate) fn search_query_fuzzy(
         &self,
         query: &str,
@@ -180,6 +181,7 @@ impl<T: std::clone::Clone> TrieRoot<T> {
     // Speedup by using a mask instead of removing chars from the query (it probably needs to change from recursive to iterative)
     // make ignore first optional
     // use levenshtein distance instead of recursive? lev > max_fuzzy
+    #[allow(clippy::too_many_arguments)]
     pub(crate) fn search_query_fuzzy_original(
         &self,
         query: &str,

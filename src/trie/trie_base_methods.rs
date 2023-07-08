@@ -1,5 +1,5 @@
 use crate::suggestion::Suggestion;
-use crate::trie::fuzzy_swaps::{ConstrainedFuzzyRatio};
+use crate::trie::fuzzy_swaps::ConstrainedFuzzyRatio;
 use crate::trie::trie_fuzzy_search::FuzzyFunctionData;
 use crate::trie::trie_structs::{TrieInputData, TrieNode, TrieRoot};
 use ahash::{HashMap, HashSet};
