@@ -179,7 +179,6 @@ impl<T: std::clone::Clone> TrieRoot<T> {
     // TODO:
     // change from recursive to iterative
     // Speedup by using a mask instead of removing chars from the query (it probably needs to change from recursive to iterative)
-    // make ignore first optional
     // use levenshtein distance instead of recursive? lev > max_fuzzy
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn search_query_fuzzy_original(
