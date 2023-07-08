@@ -24,26 +24,19 @@ impl<T: std::clone::Clone> TrieRoot<T> {
         ratio > 0 && ratio > fuzzy_count
     }
 
-    /// We could return the swap score, but its not that important
     fn fuzzy_swap(
+        &self,
         char_find: &Option<char>,
         swap_array: &Option<&(char, Option<&Vec<char>>)>,
     ) -> bool {
-        if let Some(swap) = swap_array {
-            if let Some(combs) = swap.1 {
-                if combs.iter().any(|x| {
-                    if let Some(c) = &char_find {
-                        *x == *c
-                    } else {
-                        false
-                    }
-                }) {
-                    return true;
+        if let Some((_, Some(combs))) = swap_array {
+            return combs.iter().any(|x| {
+                if let Some(c) = &char_find {
+                    *x == *c
+                } else {
+                    false
                 }
-                return false;
-            } else {
-                return false;
-            }
+            });
         }
         false
     }
@@ -57,6 +50,7 @@ impl<T: std::clone::Clone> TrieRoot<T> {
         score_modifier: i32,
         new_chars: i32,
     ) {
+        // Compare remaining lengths, nd.0 is the node chars, query is the remaining query
         match nd.0.len().cmp(&query.len()) {
             Ordering::Less => {
                 let add_here = self.search_query_fuzzy(
@@ -69,6 +63,9 @@ impl<T: std::clone::Clone> TrieRoot<T> {
                     0,
                 );
 
+                // In case we go to the next node and dont match, but we can erase it using our fuzzy allowance
+                // we should do it, but there is a limitation, we cannot go more than one node back, if we get A->B->CC
+                // and we have 3 fuzzy remaining, it never goes to A (maybe its not needed, but its a limitation)
                 if add_here {
                     if let Some(result_node) = fuzzy_data.visited_nodes.get_mut(&nd.1.uid) {
                         let new_score = score_modifier - (nd.0.len() as i32 * FUZZY_PENALTY_ADD);
@@ -109,6 +106,7 @@ impl<T: std::clone::Clone> TrieRoot<T> {
 
     /// This function is a memoization wrapper for the real search_query_fuzzy_original function
     /// We don't want to repeat the same node if we reach it with the same parameters
+    /// But in some cases we can arrive in the same node with better score.
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn search_query_fuzzy(
         &self,
@@ -134,7 +132,7 @@ impl<T: std::clone::Clone> TrieRoot<T> {
             node_borrow.uid,
             fuzzy_count,
             score_modifier,
-        ));        
+        ));
 
         self.search_query_fuzzy_original(
             query,
@@ -162,7 +160,7 @@ impl<T: std::clone::Clone> TrieRoot<T> {
         position: usize,
     ) -> Option<String> {
         let f_char = query_char.unwrap();
-        let can_swap = TrieRoot::<T>::fuzzy_swap(
+        let can_swap = self.fuzzy_swap(
             node_char,
             &fuzzy_data.swap_table.iter().find(|x| x.0 == f_char),
         );
@@ -269,13 +267,9 @@ impl<T: std::clone::Clone> TrieRoot<T> {
                     );
 
                     // Fuzzy SWAP
-                    if let Some(next_query) = self.modify_query_swap(
-                        &node_char,
-                        &query_char,
-                        fuzzy_data,
-                        query,
-                        char_pos,
-                    ) {
+                    if let Some(next_query) =
+                        self.modify_query_swap(&node_char, &query_char, fuzzy_data, query, char_pos)
+                    {
                         self.search_query_fuzzy(
                             &next_query,
                             fuzzy_data,
