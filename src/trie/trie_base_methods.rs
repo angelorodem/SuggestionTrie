@@ -1,4 +1,5 @@
 use crate::suggestion::Suggestion;
+use crate::trie::fuzzy_swaps::{ConstrainedFuzzyRatio};
 use crate::trie::trie_fuzzy_search::FuzzyFunctionData;
 use crate::trie::trie_structs::{TrieInputData, TrieNode, TrieRoot};
 use ahash::{HashMap, HashSet};
@@ -57,12 +58,37 @@ impl<T: std::clone::Clone> TrieRoot<T> {
     /// assert_eq!(results.unwrap()[0].title, "Rat");
     /// ```
     pub fn new(min_results_before_fuzzy: usize, max_node_results: Option<usize>) -> TrieRoot<T> {
+        let fuzzy_ratio:  Vec<ConstrainedFuzzyRatio> = vec![
+            ConstrainedFuzzyRatio {
+                char_count: 0,
+                fuzzy_count: 0,
+            },
+            ConstrainedFuzzyRatio {
+                char_count: 4,
+                fuzzy_count: 1,
+            },
+            ConstrainedFuzzyRatio {
+                char_count: 8,
+                fuzzy_count: 2,
+            },
+            ConstrainedFuzzyRatio {
+                char_count: 10,
+                fuzzy_count: 3,
+            },
+            ConstrainedFuzzyRatio {
+                char_count: 14,
+                fuzzy_count: 4,
+            },
+        ];
+
+
         if let Some(max_node_results) = max_node_results {
             TrieRoot {
                 min_results_before_fuzzy,
                 root: TrieNode::new(vec![], None),
                 trie_data_array: Vec::new(),
                 max_node_results,
+                fuzzy_ratio
             }
         } else {
             TrieRoot {
@@ -70,8 +96,49 @@ impl<T: std::clone::Clone> TrieRoot<T> {
                 root: TrieNode::new(vec![], None),
                 trie_data_array: Vec::new(),
                 max_node_results: usize::MAX,
+                fuzzy_ratio
             }
         }
+    }
+
+    /// This function controls the fuzzy ratio for the query length
+    /// the idea is that the longer the query, more issues it can have
+    /// so we can give a series of `ConstrainedFuzzyRatio` that control how many
+    /// fuzzy characters are allowed for a given query length
+    /// 
+    /// 4 Is the max recommended.
+    /// 
+    /// Note: increase fuzzy count is expensive since fuzzy is like brute force O(n^k)
+    /// this can be optimized in the future
+    /// 
+    /// # Example of use
+    /// ```rust
+    /// use suggestion_trie::ConstrainedFuzzyRatio;
+    /// let CONSTRAINED_FUZZY_RATIO = vec![
+    /// ConstrainedFuzzyRatio {
+    ///     char_count: 0,
+    ///     fuzzy_count: 0,
+    /// },
+    /// ConstrainedFuzzyRatio {
+    ///     char_count: 4,
+    ///     fuzzy_count: 1,
+    /// },
+    /// ConstrainedFuzzyRatio {
+    ///     char_count: 8,
+    ///     fuzzy_count: 2,
+    /// },
+    /// ConstrainedFuzzyRatio {
+    ///     char_count: 10,
+    ///     fuzzy_count: 3,
+    /// },
+    /// ConstrainedFuzzyRatio {
+    ///     char_count: 14,
+    ///     fuzzy_count: 4,
+    /// },
+    /// ];
+    /// ```
+    pub fn change_fuzzy_ratio(&mut self, ratio: Vec<ConstrainedFuzzyRatio>) {
+        self.fuzzy_ratio = ratio;
     }
 
     /// Searches for a query in the trie, if the query is found, it returns a vector of suggestions
@@ -116,7 +183,7 @@ impl<T: std::clone::Clone> TrieRoot<T> {
             visited_nodes: HashMap::default(),
             memoize_function: HashSet::default(),
         };
-        TrieRoot::<T>::search_query_fuzzy(query, &mut fuzzy_data, &self.root, 0, true, 0, 0);
+        self.search_query_fuzzy(query, &mut fuzzy_data, &self.root, 0, true, 0, 0);
 
         if !fuzzy_data.visited_nodes.is_empty() {
             let mut results = Vec::from_iter(fuzzy_data.visited_nodes.values());

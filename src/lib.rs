@@ -50,10 +50,6 @@
 //!let results = trie_root.get_suggestions("Rodent");
 //!assert_eq!(results.unwrap()[0].title, "Rat");
 //!```
-//!
-//!## Docs  
-//!
-//!check the docs [here](https://docs.rs/suggestion_trie/latest/suggestion_trie/)
 #![crate_name = "suggestion_trie"]
 #![feature(round_char_boundary)]
 #[macro_use]
@@ -67,8 +63,11 @@ pub mod suggestion;
 #[doc(inline)]
 pub use trie::trie_structs::{
     TrieInputData,
-    TrieRoot
+    TrieRoot,
 };
+
+#[doc(inline)]
+pub use trie::fuzzy_swaps::ConstrainedFuzzyRatio;
 
 #[doc(inline)]
 pub use suggestion::Suggestion;

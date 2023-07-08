@@ -1,5 +1,5 @@
 use crate::suggestion::Suggestion;
-use crate::trie::fuzzy_swaps::{get_query_ratio, FUZZY_CHAR_SWAPS_DATA};
+use crate::trie::fuzzy_swaps::{get_query_ratio, FUZZY_CHAR_SWAPS_DATA, ConstrainedFuzzyRatio};
 use crate::trie::trie_structs::{SearchResults, TrieNode, TrieRoot};
 use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
@@ -18,8 +18,8 @@ pub(crate) struct FuzzyFunctionData<'a> {
 }
 
 impl<T: std::clone::Clone> TrieRoot<T> {
-    pub fn should_fuzzy_match(query_len: &usize, fuzzy_count: i32) -> bool {
-        let ratio = get_query_ratio(query_len);
+    pub fn should_fuzzy_match(&self, query_len: &usize, fuzzy_count: i32) -> bool {
+        let ratio = get_query_ratio(query_len, &self.fuzzy_ratio);
 
         ratio > 0 && ratio > fuzzy_count
     }
@@ -49,6 +49,7 @@ impl<T: std::clone::Clone> TrieRoot<T> {
     }
 
     fn end_of_node_compare(
+        &self,
         query: &str,
         fuzzy_data: &mut FuzzyFunctionData,
         local_fuzzy: &i32,
@@ -58,7 +59,7 @@ impl<T: std::clone::Clone> TrieRoot<T> {
     ) {
         match nd.0.len().cmp(&query.len()) {
             Ordering::Less => {
-                let add_here = TrieRoot::<T>::search_query_fuzzy(
+                let add_here = self.search_query_fuzzy(
                     &query[query.ceil_char_boundary(nd.0.len() - (new_chars as usize))..],
                     fuzzy_data,
                     &nd.1,
@@ -107,6 +108,7 @@ impl<T: std::clone::Clone> TrieRoot<T> {
     }
 
     pub(crate) fn search_query_fuzzy(
+        &self,
         query: &str,
         fuzzy_data: &mut FuzzyFunctionData,
         node_borrow: &TrieNode,
@@ -133,7 +135,7 @@ impl<T: std::clone::Clone> TrieRoot<T> {
             ));
         }
 
-        TrieRoot::<T>::search_query_fuzzy_original(
+        self.search_query_fuzzy_original(
             query,
             fuzzy_data,
             node_borrow,
@@ -144,12 +146,13 @@ impl<T: std::clone::Clone> TrieRoot<T> {
         )
     }
 
-    pub(crate) fn modify_query_remove(query: &str, position: usize) -> String {
+    pub(crate) fn modify_query_remove(&self, query: &str, position: usize) -> String {
         let upper_cut = query.ceil_char_boundary(position + 1);
         [&query[..position], &query[upper_cut..]].concat()
     }
 
     pub(crate) fn modify_query_fuzzy(
+        &self,
         node_char: &Option<char>,
         query_char: &Option<char>,
         fuzzy_data: &FuzzyFunctionData,
@@ -178,6 +181,7 @@ impl<T: std::clone::Clone> TrieRoot<T> {
     // make ignore first optional
     // use levenshtein distance instead of recursive? lev > max_fuzzy
     pub(crate) fn search_query_fuzzy_original(
+        &self,
         query: &str,
         fuzzy_data: &mut FuzzyFunctionData,
         node_borrow: &TrieNode,
@@ -201,7 +205,7 @@ impl<T: std::clone::Clone> TrieRoot<T> {
             // But we should only do this at the end of the query and node,
             if current_node.is_none() {
                 // Check if we have fuzzy swaps available
-                let should_fuzzy_match_last = TrieRoot::<T>::should_fuzzy_match(
+                let should_fuzzy_match_last = self.should_fuzzy_match(
                     &fuzzy_data.original_len,
                     // What we fuzzed already + the remaining chars
                     local_fuzzy + (query.len() - 1) as i32,
@@ -240,7 +244,7 @@ impl<T: std::clone::Clone> TrieRoot<T> {
 
                 if node_char != query_char {
                     if (char_pos == 0 && ignore_first)
-                        || !TrieRoot::<T>::should_fuzzy_match(&fuzzy_data.original_len, local_fuzzy)
+                        || !self.should_fuzzy_match(&fuzzy_data.original_len, local_fuzzy)
                         || char_pos >= query.len()
                     {
                         if node_skip > 0 {
@@ -251,8 +255,8 @@ impl<T: std::clone::Clone> TrieRoot<T> {
                     }
 
                     // Fuzzy REMOVE
-                    let modified_query = TrieRoot::<T>::modify_query_remove(query, char_pos);
-                    TrieRoot::<T>::search_query_fuzzy(
+                    let modified_query = self.modify_query_remove(query, char_pos);
+                    self.search_query_fuzzy(
                         &modified_query,
                         fuzzy_data,
                         node_borrow,
@@ -263,14 +267,14 @@ impl<T: std::clone::Clone> TrieRoot<T> {
                     );
 
                     // Fuzzy SWAP
-                    if let Some(next_query) = TrieRoot::<T>::modify_query_fuzzy(
+                    if let Some(next_query) = self.modify_query_fuzzy(
                         &node_char,
                         &query_char,
                         fuzzy_data,
                         query,
                         char_pos,
                     ) {
-                        TrieRoot::<T>::search_query_fuzzy(
+                        self.search_query_fuzzy(
                             &next_query,
                             fuzzy_data,
                             node_borrow,
@@ -299,7 +303,7 @@ impl<T: std::clone::Clone> TrieRoot<T> {
 
             // if iterator finishes without mismatch we have one of the below
             // compare Node length against query length
-            TrieRoot::<T>::end_of_node_compare(
+            self.end_of_node_compare(
                 query,
                 fuzzy_data,
                 &local_fuzzy,
@@ -331,7 +335,7 @@ impl<T: std::clone::Clone> TrieRoot<T> {
             visited_nodes: HashMap::default(),
             memoize_function: HashSet::default(),
         };
-        TrieRoot::<T>::search_query_fuzzy(query, &mut fuzzy_data, &self.root, 0, false, 0, 0);
+        self.search_query_fuzzy(query, &mut fuzzy_data, &self.root, 0, false, 0, 0);
 
         if !fuzzy_data.visited_nodes.is_empty() {
             let res = Vec::from_iter(fuzzy_data.visited_nodes.into_values());

@@ -1,46 +1,55 @@
 use std::collections::HashMap;
 
-pub(crate) const CONSTRAINED_FUZZY_RATIO: [ConstrainedFuzzyRatio; 4] = [
-    ConstrainedFuzzyRatio {
-        char_count: 0,
-        fuzzy_count: 0,
-    },
-    ConstrainedFuzzyRatio {
-        char_count: 4,
-        fuzzy_count: 1,
-    },
-    ConstrainedFuzzyRatio {
-        char_count: 8,
-        fuzzy_count: 2,
-    },
-    ConstrainedFuzzyRatio {
-        char_count: 12,
-        fuzzy_count: 3,
-    },
-];
-
-pub(crate) struct ConstrainedFuzzyRatio {
-    char_count: i32,
-    fuzzy_count: i32,
+/// This struct controls the fuzzy ratio for the query length
+/// the idea is that the longer the query, more issues it can have
+/// so we can give a series of `ConstrainedFuzzyRatio` that control how many
+/// fuzzy characters are allowed for a given query length
+/// # Example of use
+/// ```rust
+/// use suggestion_trie::ConstrainedFuzzyRatio;
+/// let CONSTRAINED_FUZZY_RATIO = vec![
+/// ConstrainedFuzzyRatio {
+///     char_count: 0,
+///     fuzzy_count: 0,
+/// },
+/// ConstrainedFuzzyRatio {
+///     char_count: 4,
+///     fuzzy_count: 1,
+/// },
+/// ConstrainedFuzzyRatio {
+///     char_count: 8,
+///     fuzzy_count: 2,
+/// },
+/// ConstrainedFuzzyRatio {
+///     char_count: 10,
+///     fuzzy_count: 3,
+/// },
+/// ConstrainedFuzzyRatio {
+///     char_count: 14,
+///     fuzzy_count: 4,
+/// },
+/// ];
+/// ```
+#[derive(Debug, Clone)]
+pub struct ConstrainedFuzzyRatio {
+    pub char_count: i32,
+    pub fuzzy_count: i32,
 }
 
-pub(crate) fn get_query_ratio(query_len: &usize) -> i32 {
+pub(crate) fn get_query_ratio(query_len: &usize, ratio_list: &Vec<ConstrainedFuzzyRatio>) -> i32 {
     let mut result = 0;
-    for ratio in CONSTRAINED_FUZZY_RATIO.iter() {
+    for ratio in ratio_list.iter() {
         if *query_len >= ratio.char_count as usize {
             result = ratio.fuzzy_count;
         } else {
             return result;
         }
     }
-    CONSTRAINED_FUZZY_RATIO[CONSTRAINED_FUZZY_RATIO.len() - 1].fuzzy_count
+    ratio_list[ratio_list.len() - 1].fuzzy_count
 }
 
 lazy_static! {
     /// This is a table that contains some swaps for common qwerty keyboard typos and some extra.
-    /// The score is based of probability of the typo.
-    /// The score can be inaccurate, in the future the scores can be adjusted using some data analysis.
-    /// Suggestions that fuzzy swap using a char with high score will be ranked higher when returned by fuzzy search.
     pub(crate) static ref FUZZY_CHAR_SWAPS_DATA: HashMap<char, Vec<char>> = {
         let mut m = HashMap::new();
         m.insert('-', vec![' ']);

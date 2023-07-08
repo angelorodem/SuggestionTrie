@@ -1,4 +1,4 @@
-use crate::suggestion::Suggestion;
+use crate::{suggestion::Suggestion, ConstrainedFuzzyRatio};
 use std::hash::{Hash, Hasher};
 
 /// Struct used to feed the trie with data
@@ -49,6 +49,7 @@ pub struct TrieRoot<T>  where T: std::clone::Clone {
     pub(crate) max_node_results: usize,
     pub(crate) root: TrieNode,
     pub(crate) trie_data_array: Vec<Suggestion<T>>,
+    pub(crate) fuzzy_ratio: Vec<ConstrainedFuzzyRatio>,
 }
 
 #[doc(hidden)]
