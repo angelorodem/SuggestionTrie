@@ -61,7 +61,7 @@ impl<T: std::clone::Clone> TrieRoot<T> {
                     0,
                 );
 
-                // In case we go to the next node and dont match, but we can erase it using our fuzzy allowance
+                // In case we go to the next node and don't match, but we can erase it using our fuzzy allowance
                 // we should do it, but there is a limitation, we cannot go more than one node back, if we get A->B->CC
                 // and we have 3 fuzzy remaining, it never goes to A (maybe its not needed, but its a limitation)
                 if add_here {
