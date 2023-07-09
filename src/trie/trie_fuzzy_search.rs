@@ -116,6 +116,10 @@ impl<T: std::clone::Clone> TrieRoot<T> {
         score_modifier: i32,
         node_skip: usize,
     ) -> bool {
+        if query.is_empty() {
+            return true;
+        }
+
         let set = &mut fuzzy_data.memoize_function;
         if set.contains(&(
             query.to_string(),
@@ -177,6 +181,8 @@ impl<T: std::clone::Clone> TrieRoot<T> {
     // change from recursive to iterative
     // Speedup by using a mask instead of removing chars from the query (it probably needs to change from recursive to iterative)
     // reduce heap allocations
+    // convert string to vec of chars, and use indexes instead of slicing
+    // remove  #![feature(round_char_boundary)] (use vec index instead of str slicing)
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn search_query_fuzzy_original(
         &self,
@@ -188,10 +194,6 @@ impl<T: std::clone::Clone> TrieRoot<T> {
         score_modifier: i32,
         node_skip: usize,
     ) -> bool {
-        if query.is_empty() {
-            return true;
-        }
-
         let query_iterator = query.chars();
         let mut nodes_iter = node_borrow.nodes.iter().skip(node_skip).enumerate();
         'node_loop: loop {
