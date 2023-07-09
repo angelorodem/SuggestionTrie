@@ -281,10 +281,11 @@ impl<T: std::clone::Clone> TrieRoot<T> {
                 }
             }
 
-            match &mut base_node[base_node_counter].0.len().cmp(&keyword.len()) {
+            let current_node = &mut base_node[base_node_counter];
+            match current_node.0.len().cmp(&keyword.len()) {
                 Ordering::Greater => {
                     // if the node is bigger than the query, query was fully matched
-                    let new_node = TrieRoot::<T>::query_match_insert(keyword, index, &base_node[base_node_counter]);
+                    let new_node = TrieRoot::<T>::query_match_insert(keyword, index, current_node);
                     base_node.swap_remove(base_node_counter);
                     base_node.push(new_node);
                     return;
@@ -292,21 +293,21 @@ impl<T: std::clone::Clone> TrieRoot<T> {
                 Ordering::Less => {
                     // if the node is smaller than the query, node was fully matched
                     // we go to next node
-                    TrieRoot::<T>::add_index_to_node(&mut base_node[base_node_counter].1, index);
-                    keyword = &keyword[base_node[base_node_counter].0.len()..];
+                    TrieRoot::<T>::add_index_to_node(&mut current_node.1, index);
+                    keyword = &keyword[current_node.0.len()..];
                     base_node = &mut base_node[base_node_counter].1.nodes;
                     base_node_counter = 0;
                     continue;
                 }
                 Ordering::Equal => {
                     // if the node is the same size as the query, full match end
-                    TrieRoot::<T>::add_index_to_node(&mut base_node[base_node_counter].1, index);
+                    TrieRoot::<T>::add_index_to_node(&mut current_node.1, index);
                     return;
                 }
             }
         }
     }
-    
+
     /// Function that adds all suggestions to the trie
     /// Suggestions are indexed by all keywords inside the `TrieInputData`
     /// # Example
