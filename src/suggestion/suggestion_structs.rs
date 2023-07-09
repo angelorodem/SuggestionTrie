@@ -12,11 +12,13 @@
 /// ```
 #[derive(Debug, Clone, Default)]
 pub struct Suggestion<T> where T: std::clone::Clone {
-    /// Suggestion title, this is what is usually displayed to the user
+    /// Suggestion title, this is what is usually displayed to the user (if needed)
     pub title: String,
     /// Random data that might be associated with the suggestion
     pub data: Option<T>,
-    pub rank: i32,
+    /// Used to order the display of the suggestions
+    pub(crate) rank: i32,
+    /// What is the position of this suggestion in the suggestion vector
     pub(crate) index: u32,
 }
 

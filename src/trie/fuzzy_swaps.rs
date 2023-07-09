@@ -4,35 +4,40 @@ use std::collections::HashMap;
 /// the idea is that the longer the query, more issues it can have
 /// so we can give a series of `ConstrainedFuzzyRatio` that control how many
 /// fuzzy characters are allowed for a given query length
-/// # Example of use
+/// 
+/// # Example
 /// ```rust
 /// use suggestion_trie::ConstrainedFuzzyRatio;
 /// let CONSTRAINED_FUZZY_RATIO = vec![
-/// ConstrainedFuzzyRatio {
-///     char_count: 0,
-///     fuzzy_count: 0,
-/// },
-/// ConstrainedFuzzyRatio {
-///     char_count: 4,
-///     fuzzy_count: 1,
-/// },
-/// ConstrainedFuzzyRatio {
-///     char_count: 8,
-///     fuzzy_count: 2,
-/// },
-/// ConstrainedFuzzyRatio {
-///     char_count: 10,
-///     fuzzy_count: 3,
-/// },
-/// ConstrainedFuzzyRatio {
-///     char_count: 14,
-///     fuzzy_count: 4,
-/// },
+///   ConstrainedFuzzyRatio {
+///       char_count: 0,
+///       fuzzy_count: 0,
+///   },
+///   ConstrainedFuzzyRatio {
+///       char_count: 4,
+///       fuzzy_count: 1,
+///   },
+///   ConstrainedFuzzyRatio {
+///       char_count: 8,
+///       fuzzy_count: 2,
+///   },
+///   ConstrainedFuzzyRatio {
+///       char_count: 10,
+///       fuzzy_count: 3,
+///   },
+///   ConstrainedFuzzyRatio {
+///       char_count: 14,
+///       fuzzy_count: 4,
+///   },
 /// ];
+/// 
+/// // Use change_fuzzy_ratio() function to set this ratios on the trie search algorithm
 /// ```
 #[derive(Debug, Clone)]
 pub struct ConstrainedFuzzyRatio {
+    /// Numbers of chars in the query before the `fuzzy_count` is applied
     pub char_count: i32,
+    /// Number 
     pub fuzzy_count: i32,
 }
 

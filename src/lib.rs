@@ -5,7 +5,7 @@
 //!* Compressed trie by default, more memory efficient for sparse tries
 //!* It supports a simple fuzzy to fix typos in the search.
 //!* Customizable suggestions data, you can add anything associated with a word or a set of words.
-//!* Non-fuzzy suggestion retrieval in µs to ns.
+//!* Non-fuzzy suggestion retrieval in µs to ns for even millions of entries.
 //!
 //!## Examples  
 //!
@@ -22,7 +22,7 @@
 //!Cargo.toml
 //!
 //!```toml
-//!suggestion_trie = "^0.1.0"
+//!suggestion_trie = "^0.1"
 //!```
 //!
 //!Code example

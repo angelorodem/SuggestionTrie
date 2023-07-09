@@ -29,11 +29,13 @@ impl TrieNode {
 impl<T: std::clone::Clone> TrieRoot<T> {
     /// Creates a new `TrieRoot`, this is the main struct that you will use to interact with the Trie
     /// - `min_results_before_fuzzy` is used to control when the fuzzy search is used,
-    /// if the search results in less than `min_results_before_fuzzy`, the fuzzy search will be used,
-    /// if you want to use fuzzy only if no results are found use `min_results_before_fuzzy` as 1, zero will always fuzzy and its not recommended.
+    /// if the search results in less than it, the fuzzy search will be used,
+    /// if you want to use fuzzy only if no results are found set it as 1, zero will always fuzzy and its not recommended.
+    /// 
     /// - `max_node_results` is the maximum number of indexes returned by a single node. None will return all values,
-    /// `max_node_results` is specially useful in shallow nodes that might return too much data, like searching for just "a" in big
+    /// this value is specially useful in shallow nodes that might return too much data, like searching for just "a" in big
     /// tries, might yield too much data for the first nodes, this depends on you application, tune to find the best results and performance.
+    /// # Example
     /// ```
     /// use suggestion_trie::{TrieRoot, TrieInputData};
     /// use suggestion_trie::Suggestion;
@@ -105,36 +107,38 @@ impl<T: std::clone::Clone> TrieRoot<T> {
     /// so we can give a series of `ConstrainedFuzzyRatio` that control how many
     /// fuzzy characters are allowed for a given query length
     ///
-    /// 4 Is the max recommended.
+    /// fuzzy_count: 4 Is the max recommended.
     ///
-    /// Note: increase fuzzy count is expensive since fuzzy is like brute force O(n^k)
+    /// Note: increase fuzzy count is expensive since fuzzy is like an exponential brute force
     /// this can be optimized in the future
     ///
-    /// # Example of use
+    /// # Example
     /// ```rust
     /// use suggestion_trie::ConstrainedFuzzyRatio;
     /// let CONSTRAINED_FUZZY_RATIO = vec![
-    /// ConstrainedFuzzyRatio {
-    ///     char_count: 0,
-    ///     fuzzy_count: 0,
-    /// },
-    /// ConstrainedFuzzyRatio {
-    ///     char_count: 4,
-    ///     fuzzy_count: 1,
-    /// },
-    /// ConstrainedFuzzyRatio {
-    ///     char_count: 8,
-    ///     fuzzy_count: 2,
-    /// },
-    /// ConstrainedFuzzyRatio {
-    ///     char_count: 10,
-    ///     fuzzy_count: 3,
-    /// },
-    /// ConstrainedFuzzyRatio {
-    ///     char_count: 14,
-    ///     fuzzy_count: 4,
-    /// },
+    ///   ConstrainedFuzzyRatio {
+    ///       char_count: 0,
+    ///       fuzzy_count: 0,
+    ///   },
+    ///   ConstrainedFuzzyRatio {
+    ///       char_count: 4,
+    ///       fuzzy_count: 1,
+    ///   },
+    ///   ConstrainedFuzzyRatio {
+    ///       char_count: 8,
+    ///       fuzzy_count: 2,
+    ///   },
+    ///   ConstrainedFuzzyRatio {
+    ///       char_count: 10,
+    ///       fuzzy_count: 3,
+    ///   },
+    ///   ConstrainedFuzzyRatio {
+    ///       char_count: 14,
+    ///       fuzzy_count: 4,
+    ///   },
     /// ];
+    /// 
+    /// // use the function `change_fuzzy_ratio` to change the ratio
     /// ```
     pub fn change_fuzzy_ratio(&mut self, ratio: Vec<ConstrainedFuzzyRatio>) {
         self.fuzzy_ratio = ratio;
@@ -145,6 +149,8 @@ impl<T: std::clone::Clone> TrieRoot<T> {
     ///
     /// if the returned results by the direct search are less then `min_results_before_fuzzy`
     /// the results are discarded and the fuzzy search is used instead.
+    /// 
+    /// # Example
     /// ```
     /// use suggestion_trie::TrieRoot;
     /// let mut trie_root: TrieRoot<i32> = TrieRoot::<i32>::new(5,Some(100));

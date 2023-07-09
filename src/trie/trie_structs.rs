@@ -18,7 +18,9 @@ use std::hash::{Hash, Hasher};
 /// // Use it with TrieRoot build method
 /// ```
 pub struct TrieInputData<T>  where T: std::clone::Clone {
+    /// Set of words that will be associated with the suggestion
     pub keywords: Vec<String>,
+    /// Container of data that will be returned if the keywords match with the user query
     pub suggestion: Suggestion<T>
 }
 
