@@ -24,16 +24,12 @@ impl<T: std::clone::Clone> TrieRoot<T> {
 
     fn fuzzy_swap(
         &self,
-        char_find: &Option<char>,
+        char_find: &char,
         swap_array: &Option<&(char, Option<&Vec<char>>)>,
     ) -> bool {
         if let Some((_, Some(combs))) = swap_array {
             return combs.iter().any(|x| {
-                if let Some(c) = &char_find {
-                    *x == *c
-                } else {
-                    false
-                }
+                    *x == *char_find
             });
         }
         false
@@ -155,23 +151,22 @@ impl<T: std::clone::Clone> TrieRoot<T> {
 
     pub(crate) fn modify_query_swap(
         &self,
-        node_char: &Option<char>,
-        query_char: &Option<char>,
+        node_char: &char,
+        query_char: &char,
         fuzzy_data: &FuzzyFunctionData,
         query: &str,
         position: usize,
     ) -> Option<String> {
-        let f_char = query_char.unwrap();
         let can_swap = self.fuzzy_swap(
             node_char,
-            &fuzzy_data.swap_table.iter().find(|x| x.0 == f_char),
+            &fuzzy_data.swap_table.iter().find(|x| x.0 == *query_char),
         );
 
         if can_swap {
             let upper_cut = query.ceil_char_boundary(position + 1);
 
             let mut next_query = query.to_string();
-            next_query.replace_range(position..upper_cut, &node_char.unwrap().to_string());
+            next_query.replace_range(position..upper_cut, &node_char.to_string());
             return Some(next_query);
         }
         None
@@ -243,6 +238,9 @@ impl<T: std::clone::Clone> TrieRoot<T> {
                 }
 
                 if node_char != query_char {
+                    let node_char = node_char.unwrap();
+                    let query_char = query_char.unwrap();
+
                     if (char_pos == 0 && ignore_first)
                         || !self.should_fuzzy_match(&fuzzy_data.original_len, local_fuzzy)
                         || char_pos >= query.len()
