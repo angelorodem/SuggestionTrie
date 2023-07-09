@@ -58,7 +58,7 @@ impl<T: std::clone::Clone> TrieRoot<T> {
     /// assert_eq!(results.unwrap()[0].title, "Rat");
     /// ```
     pub fn new(min_results_before_fuzzy: usize, max_node_results: Option<usize>) -> TrieRoot<T> {
-        let fuzzy_ratio:  Vec<ConstrainedFuzzyRatio> = vec![
+        let fuzzy_ratio: Vec<ConstrainedFuzzyRatio> = vec![
             ConstrainedFuzzyRatio {
                 char_count: 0,
                 fuzzy_count: 0,
@@ -81,14 +81,13 @@ impl<T: std::clone::Clone> TrieRoot<T> {
             },
         ];
 
-
         if let Some(max_node_results) = max_node_results {
             TrieRoot {
                 min_results_before_fuzzy,
                 root: TrieNode::new(vec![], None),
                 trie_data_array: Vec::new(),
                 max_node_results,
-                fuzzy_ratio
+                fuzzy_ratio,
             }
         } else {
             TrieRoot {
@@ -96,7 +95,7 @@ impl<T: std::clone::Clone> TrieRoot<T> {
                 root: TrieNode::new(vec![], None),
                 trie_data_array: Vec::new(),
                 max_node_results: usize::MAX,
-                fuzzy_ratio
+                fuzzy_ratio,
             }
         }
     }
@@ -105,12 +104,12 @@ impl<T: std::clone::Clone> TrieRoot<T> {
     /// the idea is that the longer the query, more issues it can have
     /// so we can give a series of `ConstrainedFuzzyRatio` that control how many
     /// fuzzy characters are allowed for a given query length
-    /// 
+    ///
     /// 4 Is the max recommended.
-    /// 
+    ///
     /// Note: increase fuzzy count is expensive since fuzzy is like brute force O(n^k)
     /// this can be optimized in the future
-    /// 
+    ///
     /// # Example of use
     /// ```rust
     /// use suggestion_trie::ConstrainedFuzzyRatio;
@@ -198,10 +197,10 @@ impl<T: std::clone::Clone> TrieRoot<T> {
     }
 
     fn add_index_to_node(node: &mut TrieNode, index: u32) {
-        let nn_index = &mut node.indices;
+        let nds_index = &mut node.indices;
         // check if its not empty and if the last entry is for the same index
-        if (!nn_index.is_empty() && nn_index[nn_index.len() - 1] != index) || nn_index.is_empty() {
-            nn_index.push(index);
+        if (!nds_index.is_empty() && nds_index[nds_index.len() - 1] != index) || nds_index.is_empty() {
+            nds_index.push(index);
         }
     }
 
@@ -250,50 +249,64 @@ impl<T: std::clone::Clone> TrieRoot<T> {
         new_node
     }
 
-    fn insert_keyword(keyword: &str, nodes_borrow: &mut Vec<(String, TrieNode)>, index: u32) {
-        for (i, nd) in nodes_borrow.iter_mut().enumerate() {
-            let mut node_chars = nd.0.char_indices();
-            let mut query_chars = keyword.char_indices();
+    fn insert_suggestion_keyword(&mut self, mut keyword: &str, index: u32) {
+        let mut base_node = &mut self.root.nodes;
+        let mut base_node_counter = 0;
+        loop {
+            if base_node_counter >= base_node.len() {
+                let new_node = (keyword.to_string(), TrieNode::new(vec![index], None));
+                base_node.push(new_node);
+                return;
+            }
+            
+            let mut node_chars = base_node[base_node_counter].0.char_indices();
+            let mut keyword_chars = keyword.char_indices();
 
-            if query_chars.next() != node_chars.next() {
+            if keyword_chars.next() != node_chars.next() {
+                base_node_counter += 1;
                 continue;
             }
 
-            for chars in node_chars.zip(query_chars) {
+            for chars in node_chars.zip(keyword_chars) {
                 if chars.0 .1 != chars.1 .1 {
-                    let new_node =
-                        TrieRoot::<T>::partial_match_insert(keyword, index, nd, chars.0 .0);
-                    nodes_borrow.swap_remove(i);
-                    nodes_borrow.push(new_node);
+                    let new_node = TrieRoot::<T>::partial_match_insert(
+                        keyword,
+                        index,
+                        &base_node[base_node_counter],
+                        chars.0 .0,
+                    );
+                    base_node.swap_remove(base_node_counter);
+                    base_node.push(new_node);
                     return;
                 }
             }
 
-            match nd.0.len().cmp(&keyword.len()) {
+            match &mut base_node[base_node_counter].0.len().cmp(&keyword.len()) {
                 Ordering::Greater => {
                     // if the node is bigger than the query, query was fully matched
-                    let new_node = TrieRoot::<T>::query_match_insert(keyword, index, nd);
-                    nodes_borrow.swap_remove(i);
-                    nodes_borrow.push(new_node);
+                    let new_node = TrieRoot::<T>::query_match_insert(keyword, index, &base_node[base_node_counter]);
+                    base_node.swap_remove(base_node_counter);
+                    base_node.push(new_node);
                     return;
                 }
                 Ordering::Less => {
                     // if the node is smaller than the query, node was fully matched
-                    TrieRoot::<T>::insert_keyword(&keyword[nd.0.len()..], &mut nd.1.nodes, index);
-                    TrieRoot::<T>::add_index_to_node(&mut nd.1, index);
-                    return;
+                    // we go to next node
+                    TrieRoot::<T>::add_index_to_node(&mut base_node[base_node_counter].1, index);
+                    keyword = &keyword[base_node[base_node_counter].0.len()..];
+                    base_node = &mut base_node[base_node_counter].1.nodes;
+                    base_node_counter = 0;
+                    continue;
                 }
                 Ordering::Equal => {
                     // if the node is the same size as the query, full match end
-                    TrieRoot::<T>::add_index_to_node(&mut nd.1, index);
+                    TrieRoot::<T>::add_index_to_node(&mut base_node[base_node_counter].1, index);
                     return;
                 }
             }
         }
-        let new_node = (keyword.to_string(), TrieNode::new(vec![index], None)); // create new node with the start Bana
-        nodes_borrow.push(new_node);
     }
-
+    
     /// Function that adds all suggestions to the trie
     /// Suggestions are indexed by all keywords inside the `TrieInputData`
     /// # Example
@@ -329,11 +342,7 @@ impl<T: std::clone::Clone> TrieRoot<T> {
                 if keyword.is_empty() {
                     continue;
                 }
-                TrieRoot::<T>::insert_keyword(
-                    keyword,
-                    &mut (self.root.nodes),
-                    (self.trie_data_array.len() - 1) as u32,
-                );
+                self.insert_suggestion_keyword(keyword, (self.trie_data_array.len() - 1) as u32);
             }
         }
         self.trie_data_array.shrink_to_fit();
