@@ -302,7 +302,7 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App, number_files: usize, last_latency
                 };
 
                 let content = vec![Spans::from(vec![
-                    Span::styled(format!("r:{} - {}", m.rank, m.title), style),
+                    Span::styled(format!("{}", m.title), style),
                     path,
                 ])];
                 ListItem::new(content)
