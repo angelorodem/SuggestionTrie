@@ -2,7 +2,7 @@
 #![feature(test)]
 extern crate test;
 
-use std::collections::HashMap;
+use hashbrown::HashMap;
 
 #[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct TestSt {

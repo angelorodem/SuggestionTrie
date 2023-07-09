@@ -2,9 +2,7 @@ use crate::suggestion::Suggestion;
 use crate::trie::fuzzy_swaps::{get_query_ratio, FUZZY_CHAR_SWAPS_DATA};
 use crate::trie::trie_structs::{SearchResults, TrieNode, TrieRoot};
 use std::cmp::Ordering;
-use std::collections::{HashMap, HashSet};
-
-use ahash::RandomState;
+use hashbrown::{HashMap, HashSet};
 
 const FUZZY_PENALTY_REMOVE: i32 = 200;
 const FUZZY_PENALTY_ADD: i32 = 130;
@@ -13,8 +11,8 @@ const FUZZY_PENALTY_SWAP_BASE: i32 = 30;
 pub(crate) struct FuzzyFunctionData<'a> {
     pub(crate) original_len: usize,
     pub(crate) swap_table: Vec<(char, Option<&'a Vec<char>>)>,
-    pub(crate) visited_nodes: HashMap<u32, SearchResults, RandomState>,
-    pub(crate) memoize_function: HashSet<(String, u32, i32, i32), RandomState>,
+    pub(crate) visited_nodes: HashMap<u32, SearchResults>,
+    pub(crate) memoize_function: HashSet<(String, u32, i32, i32)>,
 }
 
 impl<T: std::clone::Clone> TrieRoot<T> {

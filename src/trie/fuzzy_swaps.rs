@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use hashbrown::HashMap;
 
 /// This struct controls the fuzzy ratio for the query length
 /// the idea is that the longer the query, more issues it can have

@@ -2,7 +2,7 @@ use crate::suggestion::Suggestion;
 use crate::trie::fuzzy_swaps::ConstrainedFuzzyRatio;
 use crate::trie::trie_fuzzy_search::FuzzyFunctionData;
 use crate::trie::trie_structs::{TrieInputData, TrieNode, TrieRoot};
-use ahash::{HashMap, HashSet};
+use hashbrown::{HashMap, HashSet};
 use rand::Rng;
 use std::cmp::Ordering;
 use std::vec;
@@ -185,8 +185,8 @@ impl<T: std::clone::Clone> TrieRoot<T> {
         let mut fuzzy_data = FuzzyFunctionData {
             swap_table,
             original_len: query.len(),
-            visited_nodes: HashMap::default(),
-            memoize_function: HashSet::default(),
+            visited_nodes: HashMap::new(),
+            memoize_function: HashSet::new(),
         };
         self.search_query_fuzzy(query, &mut fuzzy_data, &self.root, 0, true, 0, 0);
 

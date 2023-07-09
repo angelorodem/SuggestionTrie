@@ -4,7 +4,7 @@
 mod tests {
     use core::panic;
     use std::{vec};
-    use std::collections::HashMap;
+    use hashbrown::HashMap;
     use suggestion_trie::suggestion::*;
     use suggestion_trie::trie::trie_structs::*;
 
