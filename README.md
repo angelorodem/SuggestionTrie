@@ -7,6 +7,11 @@ A Radix trie for suggestion search, it allows searching for data indexed by a se
 * Customizable suggestions data, you can add anything associated with a word or a set of words.
 * Non-fuzzy suggestion retrieval in µs to ns for even millions of entries.
 
+## Note
+
+This crate uses a nightly feature #![feature(round_char_boundary)]
+it only works on nightly.
+
 ## Examples  
 
 A common usage for suggestion tries is to find data like words, documents, executables and any other data that is associated with a set of words;
