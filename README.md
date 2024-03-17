@@ -9,7 +9,7 @@ A Radix trie for suggestion search, it allows searching for data indexed by a se
 
 ## Note
 
-This crate uses a nightly feature #![feature(round_char_boundary)]
+This crate uses a nightly feature [#![feature(round_char_boundary)]](https://github.com/rust-lang/rust/issues/93743)
 it only works on nightly.
 
 ## Examples  
